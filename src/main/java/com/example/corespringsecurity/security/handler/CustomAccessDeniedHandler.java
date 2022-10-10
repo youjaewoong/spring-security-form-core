@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
+/**
+ * 인가 실패후 처리
+ */
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private String errorPage;

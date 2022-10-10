@@ -8,7 +8,8 @@ import java.util.Collection;
 
 public class AccountContext extends User {
 
-    private final Account account;
+	private static final long serialVersionUID = -4109485886128135913L;
+	private final Account account;
 
     public Account getAccount() {
         return account;

@@ -12,7 +12,9 @@ import java.io.Serializable;
 @Data
 public class Account implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = 5818734575550591310L;
+
+	@Id
     @GeneratedValue
     private Long id;
 

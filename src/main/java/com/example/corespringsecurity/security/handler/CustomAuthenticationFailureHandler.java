@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 인증 실패후 처리
+ */
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
@@ -24,10 +27,9 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         } else if ( exception instanceof InsufficientAuthenticationException ) {
             errorMessage = "Invalid Secret Key";
         }
-
-        setDefaultFailureUrl("/login?error=true&exception=" + exception.getMessage());
-
+        
+        super.setDefaultFailureUrl("/login?error=true&exception=" + exception.getMessage());
+        
         super.onAuthenticationFailure(request, response, exception);
-
     }
 }
