@@ -1,6 +1,8 @@
 package com.example.corespringsecurity.controller.login;
 
 import com.example.corespringsecurity.domain.Account;
+import com.example.corespringsecurity.security.common.FormWebAuthenticationDetails;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -15,6 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class LoginController {
 
+	
+	/**
+	 * {@link com.example.corespringsecurity.security.handler.CustomAuthenticationFailureHandler}
+	 * 로그인 실패시 에러 핸들러에서 처리된 파라미터를 받는다.
+	 */
     @GetMapping("/login")
     public String login(
             @RequestParam(value = "error", required = false) String error,

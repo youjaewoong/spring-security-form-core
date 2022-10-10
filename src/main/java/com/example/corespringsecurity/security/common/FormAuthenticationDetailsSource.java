@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * {@link FormWebAuthenticationDetails} 생성하는 클래스
+ */
 @Component
 public class FormAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> {
 

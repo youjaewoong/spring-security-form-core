@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 로그인 검증 설정 클래스
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -30,11 +33,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException( "UsernameNotFoundException!" );
         }
 
+        //권한정보
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.add(new SimpleGrantedAuthority(account.getRole()));
 
-        AccountContext accountContext = new AccountContext(account, roles);
-
-        return accountContext;
+        return new AccountContext(account, roles);
     }
 }

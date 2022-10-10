@@ -26,22 +26,30 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
+        // password 인증
         AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(username);
-
         if ( !passwordEncoder.matches( password, accountContext.getAccount().getPassword() ) ) {
             throw new BadCredentialsException( "BadCredentialsException" );
         }
 
-        // 시크릿 키 인증
+        // 커스텀 시크릿 키 인증
         FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
         String secretkey = formWebAuthenticationDetails.getSecretkey();
         if (secretkey == null || !"secret".equals(secretkey)) {
             throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
         }
-
-        return new UsernamePasswordAuthenticationToken(accountContext.getAccount(), null, accountContext.getAuthorities());
+        
+        // 인증정보를 proiver에게 전달
+        return new UsernamePasswordAuthenticationToken(
+        		accountContext.getAccount(), 
+        		null, 
+        		accountContext.getAuthorities());
     }
 
+    
+    /**
+     * 토큰 유효성 체크
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom( authentication );
