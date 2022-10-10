@@ -5,10 +5,14 @@ import com.example.corespringsecurity.domain.AccountDto;
 import com.example.corespringsecurity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 public class UserController {
@@ -38,6 +42,18 @@ public class UserController {
         userService.createUser( account );
 
         return "redirect:/";
+    }
+    
+    
+    @PostMapping("/api/users")
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void extenalCreateUser(@RequestBody AccountDto accountDto) {
+
+        ModelMapper modelMapper = new ModelMapper();
+        Account account = modelMapper.map(accountDto, Account.class);
+        account.setPassword( passwordEncoder.encode(account.getPassword()) );
+        userService.createUser( account );
     }
 
 }

@@ -1,61 +1,33 @@
 package com.example.corespringsecurity.security.config;
 
-import com.example.corespringsecurity.security.handler.CustomAccessDeniedHandler;
-import com.example.corespringsecurity.security.provider.CustomAuthenticationProvider;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+import com.example.corespringsecurity.security.handler.CustomAccessDeniedHandler;
+import com.example.corespringsecurity.security.provider.CustomAuthenticationProvider;
 
 @Configuration
+@Order(1)
 @EnableWebSecurity
 public class SecurityConfig {
-	
-//    @Bean
-//    public UserDetailsManager users() {
-//
-//        String password = passwordEncoder().encode("1111");
-//
-//        UserDetails user = User.builder()
-//                .username( "user" )
-//                .password( password )
-//                .roles( "USER" )
-//                .build();
-//
-//        UserDetails manager = User.builder()
-//                .username("manager")
-//                .password( password )
-//                .roles("MANAGER")
-//                .build();
-//
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password( password )
-//                .roles("ADMIN", "MANAGER", "USER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager( user, manager, admin );
-//    }
 
 
     /**
@@ -103,11 +75,11 @@ public class SecurityConfig {
     /**
      * {@link CustomUserDetailsService} 구현체를 참조하여 처리
      */
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
-    }
-    
+//    @Bean
+//    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
+//        return authConfiguration.getAuthenticationManager();
+//    }
+//    
 
     /**
      * {@link com.example.corespringsecurity.security.provider.CustomAuthenticationProvider} 구현체를 참조하여 처리
@@ -130,6 +102,7 @@ public class SecurityConfig {
         return accessDeniedHandler;
     }
     
+
     
     /**
      * 필터를 거치지 않으며 보안필터를 적용할 필요가 없는 리소스 설정
@@ -144,11 +117,21 @@ public class SecurityConfig {
     
     
     @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return customAuthenticationProvider();
+    }
+    
+    
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    	
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(authenticationProvider());
+        authenticationManagerBuilder.parentAuthenticationManager(null);
 
         http
                 .authorizeRequests()
-                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll() // login/* params까지 처리 
+                .antMatchers("/", "/users", "/user/login/**", "/login*").permitAll() // login/* params까지 처리 
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/message").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -164,9 +147,14 @@ public class SecurityConfig {
                 .failureHandler(authenticationFailureHandler)
                 .permitAll();
 
+        
         http
                 .exceptionHandling()
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                .accessDeniedPage("/denied")
                 .accessDeniedHandler(accessDeniedHandler());
+        
+        http.csrf().disable();
 
         return http.build();
     }
