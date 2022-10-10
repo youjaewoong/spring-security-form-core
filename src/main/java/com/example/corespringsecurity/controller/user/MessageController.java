@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MessageController {
 
-    @GetMapping("/message")
+    @GetMapping("/messages")
     public String messages() {
         return "user/messages";
     }

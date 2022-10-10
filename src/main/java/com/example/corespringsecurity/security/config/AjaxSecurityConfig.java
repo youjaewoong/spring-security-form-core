@@ -1,6 +1,5 @@
 package com.example.corespringsecurity.security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -24,12 +23,6 @@ public class AjaxSecurityConfig {
 	private AuthenticationConfiguration authenticationConfiguration;
 	
 	
-    @Autowired
-    private void setAjaxSecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
-        this.authenticationConfiguration = authenticationConfiguration;
-    }
-
-   
     /**
      * 1step
      * {@link com.example.corespringsecurity.security.provider.AjaxAuthenticationProvider} 구현체를 참조하여 처리
