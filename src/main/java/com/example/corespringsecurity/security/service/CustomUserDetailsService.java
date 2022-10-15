@@ -1,10 +1,10 @@
 package com.example.corespringsecurity.security.service;
 
-import com.example.corespringsecurity.domain.Account;
-import com.example.corespringsecurity.repository.UserRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,13 +12,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.corespringsecurity.domain.entity.Account;
+import com.example.corespringsecurity.repository.UserRepository;
 
 /**
  * 로그인 검증 설정 클래스
  */
-@Service
+@Service("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -28,15 +28,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Account account = userRepository.findByUsername(username);
-
-        if ( account == null ) {
-            throw new UsernameNotFoundException( "UsernameNotFoundException!" );
+        if (account == null) {
+            if (userRepository.countByUsername(username) == 0) {
+                throw new UsernameNotFoundException("No user found with username: " + username);
+            }
         }
 
         //권한정보
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(account.getRole()));
+        Set<String> userRoles = account.getUserRoles()
+                .stream()
+                .map(userRole -> userRole.getRoleName())
+                .collect(Collectors.toSet());
 
-        return new AccountContext(account, roles);
+        List<GrantedAuthority> collect = userRoles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return new AccountContext(account, collect);
     }
 }

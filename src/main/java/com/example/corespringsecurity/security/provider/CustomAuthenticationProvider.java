@@ -3,6 +3,9 @@ package com.example.corespringsecurity.security.provider;
 import com.example.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import com.example.corespringsecurity.security.service.AccountContext;
 import com.example.corespringsecurity.security.service.CustomUserDetailsService;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +24,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         String username = authentication.getName();
