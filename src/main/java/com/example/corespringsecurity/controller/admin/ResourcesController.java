@@ -64,6 +64,7 @@ public class ResourcesController {
 		if("url".equals(resourcesDto.getResourceType())){
 			filterInvocationSecurityMetadataSource.reload();
 		}else{
+			// 등록 할때 실시간 bean 처리
 			methodSecurityService.addMethodSecured(resourcesDto.getResourceName(),resourcesDto.getRoleName());
 		}
 
@@ -108,6 +109,7 @@ public class ResourcesController {
 		if("url".equals(resources.getResourceType())) {
 			filterInvocationSecurityMetadataSource.reload();
 		}else{
+			// 삭제 할때 실시간 bean 처리
 			methodSecurityService.removeMethodSecured(resources.getResourceName());
 		}
 

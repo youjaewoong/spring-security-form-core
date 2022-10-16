@@ -26,7 +26,8 @@ public class SecurityResourceService {
 		this.accessIpRepository = accessIpRepository;
 	}
 
-	// 권한 및 자원 정보 호출
+	
+	// url방식 권한 및 자원 정보 호출
 	public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getResourceList() {
 
 		LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
@@ -42,6 +43,8 @@ public class SecurityResourceService {
 		return result;
 	}
 
+	
+	// method 방식 권한 및 자원 정보 호출
 	public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
 
 		LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
@@ -56,6 +59,7 @@ public class SecurityResourceService {
 		return result;
 	}
 
+	// pointcut 방식 권한 및 자원 정보 호출
 	public LinkedHashMap<String, List<ConfigAttribute>> getPointcutResourceList() {
 
 		LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
@@ -70,6 +74,7 @@ public class SecurityResourceService {
 		return result;
 	}
 
+	
 	public List<String> getAccessIpList() {
 		List<String> accessIpList = accessIpRepository.findAll().stream().map(accessIp -> accessIp.getIpAddress())
 				.collect(Collectors.toList());

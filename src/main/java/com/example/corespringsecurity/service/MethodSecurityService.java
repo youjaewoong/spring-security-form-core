@@ -33,6 +33,12 @@ public class MethodSecurityService {
         this.methodSecurityInterceptor = methodSecurityInterceptor;
     }
 
+
+    /**
+     * db 업데이트 했을때 보안 기능을 자동적으로 호출
+     * bean을 생성하고 advised를 등록하고
+     * @throws Exception
+     */
     public void addMethodSecured(String className, String roleName) throws Exception{
 
         int lastDotIndex = className.lastIndexOf(".");
@@ -44,6 +50,7 @@ public class MethodSecurityService {
         ProxyFactory proxyFactory = advisedMap.get(beanName);
         Object target = targetMap.get(beanName);
 
+        // 해당 bean의 프록시 객체를 생성
         if(proxyFactory == null){
 
             proxyFactory = new ProxyFactory();
@@ -53,6 +60,8 @@ public class MethodSecurityService {
             }else{
                 proxyFactory.setTarget(target);
             }
+            
+            //advice를 등록
             proxyFactory.addAdvice(methodSecurityInterceptor);
 
             advisedMap.put(beanName, proxyFactory);
@@ -61,6 +70,7 @@ public class MethodSecurityService {
 
             int adviceIndex = proxyFactory.indexOf(methodSecurityInterceptor);
             if(adviceIndex == -1){
+            	// 메소드 보안이 처리될수 있도록
                 proxyFactory.addAdvice(methodSecurityInterceptor);
             }
         }
@@ -73,14 +83,18 @@ public class MethodSecurityService {
             proxyMap.put(beanName, proxy);
 
             List<ConfigAttribute> attr = Arrays.asList(new SecurityConfig(roleName));
+            
+            // 권한처리 클래스, 메소드, 권한정보를 추출할수 있도록 처리
             mapBasedMethodSecurityMetadataSource.addSecureMethod(type,methodName, attr);
 
+            // 기존 bean 삭제하여 proxy 객체를 등록하는 구문
             DefaultSingletonBeanRegistry registry = (DefaultSingletonBeanRegistry)applicationContext.getBeanFactory();
             registry.destroySingleton(beanName);
             registry.registerSingleton(beanName, proxy);
         }
     }
 
+    // 메소드 보안을 해지할때 호출
     public void removeMethodSecured(String className) throws Exception{
 
         int lastDotIndex = className.lastIndexOf(".");

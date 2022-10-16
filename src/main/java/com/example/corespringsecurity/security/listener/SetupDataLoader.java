@@ -67,12 +67,15 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private void setupSecurityResources() {
 
         //createResourceIfNotFound("execution(public * com.example.corespringsecurity.aopsecurity.*Service.pointcut*(..))", "", roles, "pointcut");
+    	 
         
         Set<Role> userRoles = new HashSet<>();
         Role userRole = createRoleIfNotFound("ROLE_USER", "사용자권한");
         userRoles.add(userRole);
-        createResourceIfNotFound("/mypage", "", userRoles, "url");
         createUserIfNotFound("user", "user@user.com", "1111", userRoles);
+        createResourceIfNotFound("/mypage", "", userRoles, "url");
+        createResourceIfNotFound("com.example.corespringsecurity.aopsecurity.AopMethodService.methodSecured", "", userRoles, "method");
+        createResourceIfNotFound("com.example.corespringsecurity.aopsecurity.AopLiveMethodService.liveMethodSecured", "", userRoles, "method");
         
         Set<Role> managerRoles = new HashSet<>();
         Role managerRole = createRoleIfNotFound("ROLE_MANAGER", "매니저권한");
@@ -80,6 +83,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         createResourceIfNotFound("/messages", "", managerRoles, "url");
         createResourceIfNotFound("/config", "", managerRoles, "url");
         createUserIfNotFound("manager", "manager@manager.com", "1111", managerRoles);
+        
         
         Set<Role> roles = new HashSet<>();
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자"); // 롤등록

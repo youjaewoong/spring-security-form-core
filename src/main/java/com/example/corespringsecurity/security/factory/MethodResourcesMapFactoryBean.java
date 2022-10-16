@@ -1,51 +1,49 @@
 package com.example.corespringsecurity.security.factory;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.access.ConfigAttribute;
 
 import com.example.corespringsecurity.service.SecurityResourceService;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+public class MethodResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<String, List<ConfigAttribute>>> {
 
-    @Slf4j
-    public class MethodResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<String, List<ConfigAttribute>>> {
+	private SecurityResourceService securityResourceService;
+	private String resourceType;
 
-        private SecurityResourceService securityResourceService;
-        private String resourceType;
+	public void setResourceType(String resourceType) {
+		this.resourceType = resourceType;
+	}
 
-        public void setResourceType(String resourceType) {
-            this.resourceType = resourceType;
-        }
+	public void setSecurityResourceService(SecurityResourceService securityResourceService) {
+		this.securityResourceService = securityResourceService;
+	}
 
-        public void setSecurityResourceService(SecurityResourceService securityResourceService) {
-            this.securityResourceService = securityResourceService;
-        }
+	private LinkedHashMap<String, List<ConfigAttribute>> resourcesMap;
 
-        private LinkedHashMap<String, List<ConfigAttribute>> resourcesMap;
+	public void init() {
+		if ("method".equals(resourceType)) {
+			resourcesMap = securityResourceService.getMethodResourceList();
+		} else if ("pointcut".equals(resourceType)) {
+			resourcesMap = securityResourceService.getPointcutResourceList();
+		}
+	}
 
-        public void init() {
-            if ("method".equals(resourceType)) {
-                resourcesMap = securityResourceService.getMethodResourceList();
-            }else if("pointcut".equals(resourceType)){
-                resourcesMap = securityResourceService.getPointcutResourceList();
-            }
-        }
+	public LinkedHashMap<String, List<ConfigAttribute>> getObject() {
+		if (resourcesMap == null) {
+			init();
+		}
+		return resourcesMap;
+	}
 
-        public LinkedHashMap<String, List<ConfigAttribute>> getObject() {
-            if (resourcesMap == null) {
-                init();
-            }
-            return resourcesMap;
-        }
+	@SuppressWarnings("rawtypes")
+	public Class<LinkedHashMap> getObjectType() {
+		return LinkedHashMap.class;
+	}
 
-        @SuppressWarnings("rawtypes")
-        public Class<LinkedHashMap> getObjectType() {
-            return LinkedHashMap.class;
-        }
-
-        public boolean isSingleton() {
-            return true;
-        }
-    }
+	public boolean isSingleton() {
+		return true;
+	}
+}
